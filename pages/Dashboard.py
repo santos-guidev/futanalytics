@@ -77,8 +77,8 @@ st.markdown("---")
 with st.sidebar:
     st.header("⚙ Filtros")
     if not data.empty:
-        # Listar todos os times
-        times = sorted(set(data['home'].unique()).union(set(data['away'].unique())))
+        # Listar todos os times removendo valores nulos
+        times = sorted([x for x in set(data['home'].unique()).union(set(data['away'].unique())) if pd.notnull(x)])
         selecionados = st.multiselect(
             'Selecione times para análise:',
             options=times,

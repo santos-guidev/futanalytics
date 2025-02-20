@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 data_sources = {
     "Argentina Primera División": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/Argentina%20Primera%20Divisi%C3%B3n_2025.xlsx",
     "Belgium Pro League": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/Belgium%20Pro%20League_20242025.xlsx",
+    "Brasil Serie A - 2024": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/Brazil%20Serie%20A_2024.xlsx",
     "Brasil Serie A": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/Brazil%20Serie%20A_2025.xlsx",
     "England Championship": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/England%20Championship_20242025.xlsx",
     "England EFL League One": "https://github.com/futpythontrader/YouTube/raw/refs/heads/main/Bases_de_Dados/FootyStats/Bases_de_Dados_(2022-2025)/England%20EFL%20League%20One_20242025.xlsx",
@@ -122,12 +123,14 @@ def atualizar_banco():
         for liga, url_excel in data_sources.items():
             logging.info(f"Processando liga: {liga}")
             df = pd.read_excel(url_excel)
-            # Renomear colunas se necessário
+            # Renomear colunas, se necessário
             mapeamento_colunas = {
                 "Nº": "numero",
                 "Date": "match_date"
             }
             df.rename(columns=mapeamento_colunas, inplace=True)
+            # Remover linhas com valores ausentes em 'Home' ou 'Away'
+            df = df.dropna(subset=["Home", "Away"])
 
             with conn.cursor() as cur:
                 # Caso queira limpar os dados anteriores, descomente a linha abaixo:
