@@ -60,10 +60,9 @@ if not data.empty:
     data['totalgoals_ft'] = pd.to_numeric(data['totalgoals_ft'], errors='coerce').fillna(0)
     
     # Cria coluna para indicar se ambas as equipes marcaram (BTTS)
-    data['AmbasMarcam'] = data.apply(
-        lambda x: 'Sim' if (x['goals_h_ft'] > 0 and x['goals_a_ft'] > 0) else 'Não',
-        axis=1
-    )
+    data['AmbasMarcam'] = np.where(
+    (data['goals_h_ft'] > 0) & (data['goals_a_ft'] > 0), 'Sim', 'Não'
+)
 else:
     st.warning("Não foram encontrados dados no banco de dados.")
 

@@ -58,14 +58,15 @@ def calcular_probabilidades(df: pd.DataFrame) -> pd.DataFrame:
         # Probabilidade de Over 2.5 gols (exceto combinações com menos de 2 gols)
         over_2_5 = 1 - sum(
             poisson_prob(lambda_home, i) * poisson_prob(lambda_away, j)
-            for i, j in [(0, 0), (1, 0), (0, 1), (1, 1)]
+            for i in range(3)  # 0, 1, 2 gols do time da casa
+            for j in range(3 - i)  # Garante que i + j <= 2
         )
         
         # Probabilidade de ambos marcarem (BTTS)
-        btts = 1 - sum(
-            poisson_prob(lambda_home, i) * poisson_prob(lambda_away, j)
-            for i, j in [(0, 0), (0, 1), (1, 0)]
-        )
+        prob_home_no_goal = poisson_prob(lambda_home, 0)  # Probabilidade do time da casa não marcar
+        prob_away_no_goal = poisson_prob(lambda_away, 0)  # Probabilidade do time visitante não marcar
+        prob_either_no_goal = prob_home_no_goal + prob_away_no_goal - (prob_home_no_goal * prob_away_no_goal)
+        btts = 1 - prob_either_no_goal
         
         resultados.append({
             'Jogo': f"{home_team} x {away_team}",
